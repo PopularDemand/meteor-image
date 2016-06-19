@@ -1,0 +1,30 @@
+<head>
+  <title>image_share</title>
+</head>
+
+<body>
+  <h1>Welcome to Meteor!</h1>
+  <div class="container">
+    {{> images}}
+  </div>
+</body>
+
+<template name="images">
+  <!-- images, below, is the property that's passed as a template helper,
+  so this is the value stored by the images key
+  #each is an iterator -->
+  <div class="row">
+    {{#each images}}
+      <div class="col-xs-12 col-md-3" id="{{_id}}">
+        <div class="thumbnail">
+          <img class="js-image" src="{{img_src}}" alt="{{img_alt}}"/>
+          <div class="caption">
+            <h3>Thumbnail label</h3>
+            <p>description of image</p>
+            <button class="js-del-image btn btn-warning">delete</button>
+          </div>
+        </div>
+      </div> <!-- col -->
+    {{/each}}
+  </div> <!-- row -->
+</template>
