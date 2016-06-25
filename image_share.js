@@ -7,12 +7,25 @@ if (Meteor.isClient){
   // which contains image data array of objects
   // Template.images.helpers({images:img_data});
 
+  // Function available through accounts packages
+  Accounts.ui.config({
+    passwordSignupFields: "USERNAME_AND_EMAIL"
+  });
+
+  // Defines helpers for "images" template
   Template.images.helpers({images:
     // find: {} -> all of them
     //       rating: -1  -> reverse (high to low) 
     Images.find({}, {sort:{createdOn: -1, rating:-1}})
   })
 
+  // Defines helpers for body tag
+  Template.body.helpers({username: function(){
+    return Meteor.user() ? Meteor.user().username : "Anonymous";
+  }
+  })
+
+  // Defines event listeners for "images" template
   Template.images.events({
     'click .js-image': function(event){
       $(event.target).css("width", "50px");
@@ -36,6 +49,8 @@ if (Meteor.isClient){
       $("#image_add_form").modal("show");
     }
   });
+
+  // Event listeners for "image add form" template
   Template.image_add_form.events({
     'submit .js-add-image': function(event){
       var img_src, img_alt;
