@@ -3,13 +3,51 @@
 </head>
 
 <body>
-  <h1>Welcome to Meteor!</h1>
+  {{> image_add_form }}
   <div class="container">
+    <h1>Image Share</h1>
+
+    {{> loginButtons}}
+    <br/>
     {{> images}}
   </div>
 </body>
 
+<!-- structure of a modal:
+modal
+  modal-dialog
+    modal content
+      modal header
+        modal title
+      modal body
+      modal footer
+        data-dismiss='modal' -->
+<template name='image_add_form'>
+  <div class="modal fade" id='image_add_form'>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title"></div>
+        </div>
+        <div class="modal-body">
+          <form class='js-add-image'>
+            <input type="text" name='img_src'/>
+            <br/>
+            <input type="text" name='img_alt'/>
+            <button class="btn btn-success">save</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class='btn btn-warning' data-dismiss='modal'>close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+
 <template name="images">
+  <button class="btn btn-success js-show-image-form">add image</button>
   <!-- images, below, is the property that's passed as a template helper,
   so this is the value stored by the images key
   #each is an iterator -->
@@ -19,8 +57,14 @@
         <div class="thumbnail">
           <img class="js-image" src="{{img_src}}" alt="{{img_alt}}"/>
           <div class="caption">
-            <h3>Thumbnail label</h3>
-            <p>description of image</p>
+            <h3>Rating: {{rating}}</h3>
+            <p>{{img_alt}}</p>
+
+            <p>
+              <!-- from stars rating -->
+              {{>starsRating mutable=true class='js-rate-image' id=_id}}
+            </p>
+
             <button class="js-del-image btn btn-warning">delete</button>
           </div>
         </div>
