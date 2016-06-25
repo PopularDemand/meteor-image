@@ -13,10 +13,37 @@ if (Meteor.isClient){
   });
 
   // Defines helpers for "images" template
-  Template.images.helpers({images:
-    // find: {} -> all of them
-    //       rating: -1  -> reverse (high to low) 
-    Images.find({}, {sort:{createdOn: -1, rating:-1}})
+  Template.images.helpers({
+    images: function(){
+      if (Session.get("userFilter")){
+        // createdBy is a user id
+        // userFilter is a event function in the images template
+        return Images.find({createdBy: Session.get("userFilter")},
+                           {sort:{createdOn: -1, rating:-1}});
+      }
+      else {
+        // find: {} -> all of them
+        //       rating: -1  -> reverse (high to low)
+        return Images.find({}, {sort:{createdOn: -1, rating:-1}});
+      }
+    },
+    filtering_images: function(){
+      if (Session.get("userFilter")) return true;
+      else return false;
+    },
+    getUser: function(user_id){
+      // Meteor.users refers to the user collection.
+      // Different because meteor is managing users
+      var user = Meteor.users.findOne({_id: user_id});
+      if (user) return user.username;
+      else return "anon";
+    },
+    getFilterUser: function(){
+      if (Session.get("userFilter")) {
+        var filterUser = Meteor.users.findOne({_id:Session.get("userFilter")});
+        return filterUser.username;
+      }
+    }
   })
 
   // Defines helpers for body tag
@@ -47,6 +74,14 @@ if (Meteor.isClient){
     },
     'click .js-show-image-form': function(event) {
       $("#image_add_form").modal("show");
+    },
+    'click .js-set-image-filter': function(event) {
+      // 'this' is the data context for the template
+      // in which the event occured
+      Session.set("userFilter", this.createdBy);
+    },
+    'click .js-unset-image-filter': function(event){
+      Session.set("userFilter", undefined);
     }
   });
 
@@ -57,14 +92,17 @@ if (Meteor.isClient){
       // Not using jquery because form allows easy access with name fields
       img_src = event.target.img_src.value;
       img_alt = event.target.img_alt.value;
-      console.log("src: " + img_src);
-      console.log("alt " + img_alt);
-      Images.insert({
-        img_src: img_src,
-        img_alt: img_alt,
-        createdOn: new Date()
-      });
-      $("#image_add_form").modal("show");
+      // console.log("src: " + img_src);
+      // console.log("alt " + img_alt);
+      if (Meteor.user()) {
+        Images.insert({
+          img_src: img_src,
+          img_alt: img_alt,
+          createdOn: new Date(),
+          createdBy: Meteor.user()._id
+        });
+      }
+      $("#image_add_form").modal("hide");
       return false;
     }
   });
