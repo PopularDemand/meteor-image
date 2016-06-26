@@ -1,3 +1,34 @@
+// Routing with iron router
+Router.configure({
+  // Idea here is one global layout where we can
+  // swap out individual templates
+  layoutTemplate: 'ApplicationLayout'
+});
+
+Router.route('/', function () {
+  // Render welcome template in the "yield main" area
+  this.render('welcome', {to: "main"});
+});
+
+Router.route('/images', function(){
+  // render navbar in navbar
+  this.render('navbar', {to: 'navbar'});
+  // render images in main
+  this.render('images', {to: 'main'});
+});
+
+// :_id specifies a dynamic variable
+Router.route('/image/:_id', function(){
+  this.render('navbar', {to: 'navbar'});
+  this.render('image', {
+    to: 'main',
+    // The template uses the information in data
+    data: function() {
+      return Images.findOne({_id: this.params._id});
+    }
+  });
+});
+
 // Used to set up infinite scroll
 Session.set("imageLimit", 8);
 lastScrollTop = 0;
@@ -10,7 +41,6 @@ $(window).scroll(function(event){
     if (scrollTop > lastScrollTop){
       Session.set("imageLimit", Session.get("imageLimit") + 4);
     }
-
     lastScrollTop = scrollTop;
   }
 });
@@ -59,14 +89,11 @@ Template.images.helpers({
 Template.body.helpers({
   username: function(){
     return Meteor.user() ? Meteor.user().username : "Anonymous";
-}
-})
+  }
+});
 
 // Defines event listeners for "images" template
 Template.images.events({
-  'click .js-image': function(event){
-    $(event.target).css("width", "50px");
-  },
   'click .js-del-image': function(event){
     var image_id = this._id;
     $("#"+image_id).hide('slow', function(){
