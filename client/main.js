@@ -56,8 +56,9 @@ Template.images.helpers({
 })
 
 // Defines helpers for body tag
-Template.body.helpers({username: function(){
-  return Meteor.user() ? Meteor.user().username : "Anonymous";
+Template.body.helpers({
+  username: function(){
+    return Meteor.user() ? Meteor.user().username : "Anonymous";
 }
 })
 
